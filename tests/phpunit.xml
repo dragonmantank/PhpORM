@@ -1,0 +1,8 @@
+<phpunit bootstrap="./bootstrap.php" colors="true">
+    <testsuite name="phpORM">
+        <directory>./phpORM</directory>
+    </testsuite>
+    <logging>
+        <log type="coverage-html" target="./log/report" charset="UTF-8" yui="true" highlight="false"/>
+    </logging>
+</phpunit>
