@@ -11,6 +11,61 @@
  */
 class PhpORM_Collection extends ArrayObject
 {
+
+    /**
+     * Helps define some easy calls to other functions in the DAO
+     *
+     * @param string $name
+     * @param array $arguments
+     * @return mixed
+     */
+    public function  __call($name, $arguments)
+    {
+        if(stripos($name, 'fetchAllBy') === 0) {
+            $key = substr($name, 10);
+
+            return $this->fetchAllBy($key, $arguments[0]);
+        }
+
+        if(stripos($name, 'fetchOneBy') === 0) {
+            $key = substr($name, 10);
+
+            return $this->fetchOneBy($key, $arguments[0]);
+        }
+
+        throw new Exception('Unknown method '.$name.' passed');
+    }
+
+    /**
+     * Searches the collection and returns all the objects that match the search
+     *
+     * @param mixed $key
+     * @param mixed $value
+     * @return PhpORM_Collection
+     */
+    public function fetchAllBy($key, $value)
+    {
+        $store = new PhpORM_Dao_ArrayStorage();
+        $store->setStore($this->toArray());
+
+        return new PhpORM_Collection($store->fetchAllBy($key, $value));
+    }
+
+    /**
+     * Returns a single result from the Collection
+     * 
+     * @param mixed $key
+     * @param mixed $value
+     * @return mixed
+     */
+    public function fetchOneBy($key, $value)
+    {
+        $store = new PhpORM_Dao_ArrayStorage();
+        $store->setStore($this->toArray());
+
+        return $store->fetchOneBy($key, $value);
+    }
+
     /**
      * Resets the internal storage to the new array
      * @param array $store

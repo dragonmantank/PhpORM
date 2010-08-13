@@ -14,6 +14,21 @@
 class PhpORM_Dao_ArrayStorage extends PhpORM_Dao
 {
     /**
+     * Flag to see if the searches should return a True/False result
+     */
+    const RETURN_BOOL = 1;
+
+    /**
+     * Flag to see if the searches should return just one object
+     */
+    const RETURN_SINGLE = 2;
+
+    /**
+     * Flag to see if the searches should return multiple objects
+     */
+    const RETURN_MULTIPLE = 3;
+    
+    /**
      * Internal storage mechanism for this DAO
      * @var <type>
      */
@@ -47,7 +62,7 @@ class PhpORM_Dao_ArrayStorage extends PhpORM_Dao
     }
 
     /**
-     * Performs a search based upon a specific column
+     * Returns an array of objects based upon the search criteria
      *
      * If $key is an array, value is ignored and $key should be in
      * 'columnname' => 'value'.
@@ -58,32 +73,22 @@ class PhpORM_Dao_ArrayStorage extends PhpORM_Dao
      */
     public function fetchAllBy($key, $value = null)
     {
-        $foundRows = array();
-        if(is_array($key)) {
-            foreach($this->_store as $row) {
-                $goodRow = false;
-                foreach($key as $searchKey => $searchValue) {
-                    if($row[$searchKey] == $searchValue) {
-                        $goodRow = true;
-                    } else {
-                        $goodRow = false;
-                        break;
-                    }
-                }
+        return $this->searchStorage($key, $value, self::RETURN_MULTIPLE);
+    }
 
-                if($goodRow) {
-                    $foundRows[] = $row;
-                }
-            }
-        } else {
-            foreach($this->_store as $row) {
-                if($row[$key] == $value) {
-                    $foundRows[] = $row;
-                }
-            }
-        }
-
-        return $foundRows;
+    /**
+     * Performs a search based upon a specific column and returns one object
+     *
+     * If $key is an array, value is ignored and $key should be in
+     * 'columnname' => 'value'.
+     *
+     * @param mixed $key
+     * @param mixed $value
+     * @return array
+     */
+    public function fetchOneBy($key, $value = null)
+    {
+        return $this->searchStorage($key, $value, self::RETURN_SINGLE);
     }
 
     /**
@@ -141,6 +146,67 @@ class PhpORM_Dao_ArrayStorage extends PhpORM_Dao
             return true;
             
         }
+    }
+
+    /**
+     * Searches through the storage and returns a response depending on the search
+     *
+     * Can return either a single object, an array of objects, or a boolean
+     *
+     * @param mixed $key
+     * @param mixed $value
+     * @param mixed $return
+     * @return GmicRater_Collection
+     */
+    public function searchStorage($key, $value, $return = self::BOOL)
+    {
+        if($return == self::RETURN_BOOL) {
+            $foundRows = false;
+        } elseif($return == self::RETURN_MULTIPLE) {
+            $foundRows = array();
+        }
+
+        if(is_array($key)) {
+            foreach($this->_store as $row) {
+                $goodRow = false;
+                foreach($key as $searchKey => $searchValue) {
+                    if($row[$searchKey] == $searchValue) {
+                        $goodRow = true;
+                    } else {
+                        $goodRow = false;
+                        break;
+                    }
+                }
+
+                if($goodRow) {
+                    if($return == self::RETURN_BOOL) {
+                        return true;
+                    } else {
+                        if($return == self::RETURN_SINGLE) {
+                            return $row;
+                        } else {
+                            $foundRows[] = $row;
+                        }
+                    }
+                }
+            }
+        } else {
+            foreach($this->_store as $row) {
+                if($row[$key] == $value) {
+                    if($return == self::RETURN_BOOL) {
+                        return true;
+                    } else {
+                        if($return == self::RETURN_SINGLE) {
+                            return $row;
+                        } else {
+                            $foundRows[] = $row;
+                        }
+                    }
+                }
+            }
+        }
+
+        return $foundRows;
     }
 
     /**

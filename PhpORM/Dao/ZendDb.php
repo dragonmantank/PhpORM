@@ -60,6 +60,32 @@ class PhpORM_Dao_ZendDb extends PhpORM_Dao
         return $result->toArray();
     }
 
+    /**
+     * Performs a search based upon a specific column and returns a single row
+     *
+     * If $key is an array, value is ignored and $key should be in
+     * 'columnname' => 'value'.
+     *
+     * @param mixed $key
+     * @param mixed $value
+     * @return array
+     */
+    public function fetchOneBy($key, $value = null)
+    {
+        $table = $this->_getTable();
+        $select = $table->select();
+        if (is_array($key)) {
+            foreach ($key as $name => $keyvalue) {
+                $select->where($name . ' = ?', $keyvalue);
+            }
+        } else {
+            $select = $select->where($key . ' = ?', $value);
+        }
+        $result = $table->fetchRow($select);
+
+        return $result->toArray();
+    }
+
     public function find($id)
     {
         $table = $this->_getTable();

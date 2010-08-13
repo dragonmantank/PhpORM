@@ -98,4 +98,52 @@ class CollectionTest extends PHPUnit_Framework_TestCase
 
         $this->assertFalse(isset($collection['MyKey']));
     }
+
+    public function testFetchAllBy()
+    {
+        $collection = new PhpORM_Collection();
+        $collection->append(new PhpORM_Entity_Generic(array('id'=>1, 'name'=>'Bob')));
+        $collection->append(new PhpORM_Entity_Generic(array('id'=>2, 'name'=>'Bill')));
+
+        $result = $collection->fetchAllBy('id', 1);
+
+        $this->assertEquals(1, count($result));
+    }
+
+    public function testFetchAllByCall()
+    {
+        $collection = new PhpORM_Collection();
+        $collection->append(new PhpORM_Entity_Generic(array('id'=>1, 'name'=>'Bob')));
+        $collection->append(new PhpORM_Entity_Generic(array('id'=>2, 'name'=>'Bill')));
+
+        $result = $collection->fetchAllByid(1);
+
+        $this->assertEquals(1, count($result));
+    }
+
+    public function testFetchOneBy()
+    {
+        $collection = new PhpORM_Collection();
+        $collection->append(new PhpORM_Entity_Generic(array('id'=>1, 'name'=>'Bob')));
+        $collection->append(new PhpORM_Entity_Generic(array('id'=>2, 'name'=>'Bill')));
+
+        $result = $collection->fetchOneBy('id', 1);
+
+        $this->assertTrue($result instanceof PhpORM_Entity_Generic);
+        $this->assertEquals(1, $result->id);
+        $this->assertEquals('Bob', $result->name);
+    }
+
+    public function testFetchOneByCall()
+    {
+        $collection = new PhpORM_Collection();
+        $collection->append(new PhpORM_Entity_Generic(array('id'=>1, 'name'=>'Bob')));
+        $collection->append(new PhpORM_Entity_Generic(array('id'=>2, 'name'=>'Bill')));
+
+        $result = $collection->fetchOneByid(1);
+
+        $this->assertTrue($result instanceof PhpORM_Entity_Generic);
+        $this->assertEquals(1, $result->id);
+        $this->assertEquals('Bob', $result->name);
+    }
 }

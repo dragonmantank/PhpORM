@@ -40,13 +40,19 @@ abstract class PhpORM_Repository
      */
     public function  __call($name, $arguments)
     {
-        if(stripos($name, 'fetchAllBy') == 0) {
+        if(stripos($name, 'fetchAllBy') === 0) {
             $key = substr($name, 10);
 
             return $this->fetchAllBy($key, $arguments[0]);
-        } else {
-            throw new Exception('Unknown method '.$name.' passed');
         }
+
+        if(stripos($name, 'fetchOneBy') === 0) {
+            $key = substr($name, 10);
+
+            return $this->fetchOneBy($key, $arguments[0]);
+        }
+
+        throw new Exception('Unknown method '.$name.' passed');
     }
 
     /**
@@ -93,6 +99,24 @@ abstract class PhpORM_Repository
         }
 
         return $collection;
+    }
+
+    /**
+     * Performs a search based upon a specific column and returns a single entity
+     *
+     * If $key is an array, value is ignored and $key should be in
+     * 'columnname' => 'value'.
+     *
+     * @param mixed $key
+     * @param mixed $value
+     * @return array
+     */
+    public function fetchOneBy($key, $value = null)
+    {
+        $dao = $this->getDaoObject();
+        $result = $dao->fetchOneBy($key, $value);
+
+        return new $this->_entityObjectName($result);
     }
 
     /**

@@ -32,6 +32,22 @@ class ArrayStorageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Returns a single row from the store
+     */
+    public function testFetchOne()
+    {
+        $dao = $this->_getDao();
+
+        $this->assertEquals(array('id' => 1, 'value' => 'Me!'), $dao->fetchOneBy('id', 1));
+    }
+
+    public function testFetchOneCall()
+    {
+        $dao = $this->_getDao();
+        $this->assertEquals(array('id' => 1, 'value' => 'Me!'), $dao->fetchOneByid(1));
+    }
+
+    /**
      * Deletes an entry from the store
      */
     public function testDelete()

@@ -67,6 +67,13 @@ abstract class PhpORM_Entity implements ArrayAccess
         $this->_allowDynamicAttributes = $value;
     }
 
+    public function __construct(array $data = array())
+    {
+        if(count($data)) {
+            $this->fromArray($data);
+        }
+    }
+
     /**
      * Returns an attribute from the entity
      *
