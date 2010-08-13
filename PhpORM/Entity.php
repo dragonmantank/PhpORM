@@ -21,7 +21,7 @@ abstract class PhpORM_Entity implements ArrayAccess
      * Setting this false causes the entity to validate all attribute sets/gets
      * @var boolean
      */
-    protected $_ignoreMissingProperty = false;
+    protected $_allowDynamicAttributes = true;
 
     /**
      * DAO Name that this entity uses for storage
@@ -36,6 +36,38 @@ abstract class PhpORM_Entity implements ArrayAccess
     protected $_dao;
 
     /**
+     * Relationship descriptions for the entity
+     *
+     * Format is:
+     *    RelationName = array(
+     *       repo = RepoName
+     *       entity = EntityName
+     *       key = array(foreign = column, local = column)
+     *       type = (one|many)
+     *    )
+     *
+     * @var array
+     */
+    protected $_relationships = array();
+
+    /**
+     * Relationships that are currently loaded
+     *
+     * @var array
+     */
+    protected $_relations = array();
+
+    /**
+     * Allows an entity to allow/disallow dynamic attributes
+     *
+     * @param boolean $value
+     */
+    public function allowDynamicAttributes($value = true)
+    {
+        $this->_allowDynamicAttributes = $value;
+    }
+
+    /**
      * Returns an attribute from the entity
      *
      * If _ignoreMissingProperty is set to 'false' it will throw an exception
@@ -44,13 +76,18 @@ abstract class PhpORM_Entity implements ArrayAccess
      * @param string $property
      * @throws Exception
      * @return mixed
+     * @throws Exception
      */
     public function __get($property)
     {
-        if (array_key_exists($property, get_object_vars($this)) || $this->_ignoreMissingProperty) {
+        if (array_key_exists($property, get_object_vars($this)) || $this->_allowDynamicAttributes) {
             return $this->$property;
         } else {
-            throw new Exception('Requested property ' . $property . ' does not exist, could not retrieve');
+            if(array_key_exists($property, $this->_relationships)) {
+                return $this->getRelationship($property);
+            } else {
+                throw new Exception('Requested property ' . $property . ' does not exist, could not retrieve');
+            }
         }
     }
 
@@ -68,6 +105,24 @@ abstract class PhpORM_Entity implements ArrayAccess
     }
 
     /**
+     * Returns a relationship
+     *
+     * If the relationship is not loaded, it will load it first and then return
+     * it.
+     *
+     * @param string $name
+     * @return mixed
+     */
+    public function getRelationship($name)
+    {
+        if(!array_key_exists($name, $this->_relations)) {
+            $this->loadRelationship($name);
+        }
+
+        return $this->_relations[$name];
+    }
+
+    /**
      * Sets all of the entity attributes from an array
      * @param array $data 
      */
@@ -75,6 +130,23 @@ abstract class PhpORM_Entity implements ArrayAccess
     {
         foreach ($data as $key => $value) {
             $this->$key = $value;
+        }
+    }
+
+    /**
+     * Loads a relationship into the entity
+     *
+     * @param string $name
+     */
+    public function loadRelationship($name)
+    {
+        $relation = $this->_relationships[$name];
+        $repo = $relation['repo'];
+
+        if($relation['type'] == 'one') {
+            $this->_relations[$property] = $repo->fetchOneBy($relation['key']['foreign'], $relation['key']['local']);
+        } elseif($relation['type'] == 'many') {
+            $this->_relations[$property] = $repo->fetchAllBy($relation['key']['foreign'], $relation['key']['local']);
         }
     }
 
@@ -151,7 +223,7 @@ abstract class PhpORM_Entity implements ArrayAccess
      */
     public function __set($property, $value)
     {
-        if (array_key_exists($property, get_object_vars($this)) || $this->_ignoreMissingProperty) {
+        if (array_key_exists($property, get_object_vars($this)) || $this->_allowDynamicAttributes) {
             $this->$property = $value;
         } else {
             throw new Exception('Requested property ' . $property . ' does not exist, could not set');
