@@ -65,7 +65,7 @@ abstract class PhpORM_Repository
         $dao = $this->getDaoObject();
         $result = $dao->fetchAll();
 
-        $collection = array();
+        $collection = new PhpORM_Collection();
         foreach($result as $row) {
             $object = new $this->_entityObjectName;
             $object->fromArray($row);
@@ -90,9 +90,8 @@ abstract class PhpORM_Repository
         $dao = $this->getDaoObject();
         $result = $dao->fetchAllBy($key, $value);
 
-        $collection = array();
+        $collection = new PhpORM_Collection();
         foreach($result as $row) {
-
             $object = new $this->_entityObjectName;
             $object->fromArray($row);
             $collection[] = $object;
