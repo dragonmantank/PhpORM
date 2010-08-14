@@ -146,4 +146,15 @@ class CollectionTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, $result->id);
         $this->assertEquals('Bob', $result->name);
     }
+
+    public function testArrayNewNotation()
+    {
+        $collection = new PhpORM_Collection();
+        $collection[] = 'Sample';
+        $collection[] = 'Value';
+
+        $this->assertEquals(2, count($collection));
+        $this->assertEquals('Sample', $collection[0]);
+        $this->assertEquals('Value', $collection[1]);
+    }
 }
