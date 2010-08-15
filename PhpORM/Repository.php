@@ -158,7 +158,7 @@ abstract class PhpORM_Repository
      *
      * @param PhpORM_Dao $dao
      */
-    public function setDao(PhpORM_Dao_Interface $dao)
+    public function setDao(PhpORM_Dao $dao)
     {
         $this->_daoObject = $dao;
     }
