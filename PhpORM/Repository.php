@@ -62,7 +62,7 @@ abstract class PhpORM_Repository
      */
     public function fetchAll()
     {
-        $dao = $this->getDaoObject();
+        $dao = $this->getDao();
         $result = $dao->fetchAll();
 
         $collection = new PhpORM_Collection();
@@ -87,7 +87,7 @@ abstract class PhpORM_Repository
      */
     public function fetchAllBy($key, $value = null)
     {
-        $dao = $this->getDaoObject();
+        $dao = $this->getDao();
         $result = $dao->fetchAllBy($key, $value);
 
         $collection = new PhpORM_Collection();
@@ -112,7 +112,7 @@ abstract class PhpORM_Repository
      */
     public function fetchOneBy($key, $value = null)
     {
-        $dao = $this->getDaoObject();
+        $dao = $this->getDao();
         $result = $dao->fetchOneBy($key, $value);
 
         return new $this->_entityObjectName($result);
@@ -126,7 +126,7 @@ abstract class PhpORM_Repository
      */
     public function find($id)
     {
-        $dao = $this->getDaoObject();
+        $dao = $this->getDao();
         $data = $dao->find($id);
 
         $object = new $this->_entityObjectName;
