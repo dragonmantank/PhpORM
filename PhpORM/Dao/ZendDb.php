@@ -13,6 +13,10 @@
  */
 class PhpORM_Dao_ZendDb extends PhpORM_Dao
 {
+    /**
+     *
+     * @var Zend_Db_Table
+     */
     protected $_table;
     protected $_tableName;
 
