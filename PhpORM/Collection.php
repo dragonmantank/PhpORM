@@ -7,6 +7,7 @@
  * with collections of objects.
  *
  * @author Chris Tankersley <chris@ctankersley.com>
+ * @copyright 2010 Chris Tankersley
  * @package PhpORM_Collection
  */
 class PhpORM_Collection extends ArrayObject

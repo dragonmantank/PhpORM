@@ -9,11 +9,12 @@ to support different persistance layers.
 
 It works out of the box with Zend Framework by integrating Zend_Db and by itself.
 
-## Types of Objects
+## Parts of PhpORM
 * Entities - Singular Objects
 * Repositories - Allows searching and retrieving
 * Collections - Groups of similar Entities
 * DAOs - Access methods for storage
+* Command Line Interface - Group of CLI scripts to help with development
 
 ### Entities
 Entities are the 'things' in the application. If you are building a pet
@@ -66,6 +67,22 @@ If we wanted to associate
 And you would access the relationship like this:
 
     $shelter = $animal->AnimalShelter;
+
+#### SQL Generation Comments
+You can add DocBlocks to your properties to allow PhpORM to generate SQL for you.
+Let's modify our Entity just a bit:
+
+    /** type=primary_autoincrement **/
+    protected $id;           // Database ID
+    /** type=varchar length=50 **/
+    protected $type;         // Type of animal
+    /** type=date **/
+    protected $inductionDate // Date Animal came to Shelter
+    /** type=varchar length=50 null **/
+    protected $name;         // Name of the animal
+
+The CLI interface for PhpORM will use those comments to generate an SQL Create
+Table statement for you.
 
 ### Repositories
 Repositories are the recommended way to get information out of the data storage. While you can use
@@ -132,3 +149,22 @@ There is also a generic Entity class in the form of PhpORM\_Entity\_Generic. It 
     $fluffy->setDao($dao); // We want to override the built-in DAO
     $fluffy->shelter_id = 5;
     $fluffy->save(); // This will save it back to the ArrayStorage DAO
+
+## Command Line Interface
+PhpORM has basic command line interface for interacting with entities. Currently
+it supports creating an SQL block from an entity based upon the DocBlock comments
+on an entity properties. The CLI is very ugly at this stage.
+
+### Set up Bootstrap
+In bin/phporm-bootstrap.php, edit the set_include_path() function to include any
+paths for where your Entities are stored.
+
+### Running the CLI
+You can generate an SQL block with the following format:
+
+    $ /path/to/php phporm-generate-tables <Class Name> <Table Name>
+
+If you had an entity called MyApp_Entity_Messages and you wanted to create a table
+called 'messages', you would do the following:
+
+    $ /path/to/php phporm-generate-tables MyApp_Entity_Messages messages

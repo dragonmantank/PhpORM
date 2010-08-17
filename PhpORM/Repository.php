@@ -9,6 +9,7 @@
  * swapped out.
  *
  * @author Chris Tankersley <chris@ctankersley.com>
+ * @copyright 2010 Chris Tankersley
  * @package PhpORM_Repository
  */
 abstract class PhpORM_Repository

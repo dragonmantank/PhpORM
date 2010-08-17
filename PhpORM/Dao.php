@@ -8,6 +8,7 @@
  * functions.
  *
  * @author Chris Tankersley <chris@ctankersley.com>
+ * @copyright 2010 Chris Tankersley
  * @package PhpORM_Dao
  */
 abstract class PhpORM_Dao

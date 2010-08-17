@@ -9,6 +9,7 @@
  * /tests/phpORM/Dao/ArrayStorageTest.php
  *
  * @author Chris Tankersley <chris@ctankersley.com>
+ * @copyright 2010 Chris Tankersley
  * @package PhpORM_Dao
  */
 class PhpORM_Dao_ArrayStorage extends PhpORM_Dao

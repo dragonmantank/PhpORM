@@ -9,6 +9,7 @@
  * via configuration files.
  *
  * @author Chris Tankersley <chris@ctankersley.com>
+ * @copyright 2010 Chris Tankersley
  * @package PhpORM_Dao
  */
 class PhpORM_Dao_ZendDb extends PhpORM_Dao

@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Basic Bootstrap for the PhpORM CLI
+ * 
+ * @author Chris Tankersley <chris@ctankersley.com>
+ * @copyright 2010 Chris Tankersley
+ * @package PhpORM_Cli
+ */
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 

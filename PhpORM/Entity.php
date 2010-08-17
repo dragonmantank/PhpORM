@@ -4,6 +4,7 @@
  * A Representation of some sort of thing in a program
  *
  * @author Chris Tankersley <chris@ctankersley.com>
+ * @copyright 2010 Chris Tankersley
  * @package PhpORM_Entity
  */
 abstract class PhpORM_Entity implements ArrayAccess
