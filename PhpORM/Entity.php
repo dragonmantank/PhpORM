@@ -210,12 +210,15 @@ abstract class PhpORM_Entity implements ArrayAccess
     public function save() 
     {
         $dao = $this->getDao();
+        $primary = $this->_primary;
 
-        if ($this->$this->_primary == null) {
-            $this->$this->_primary = $dao->insert($this);
+        if ($this->$primary == null) {
+            $this->$primary = $dao->insert($this);
         } else {
-            $dao->update($this);
+            $this->$primary = $dao->update($this);
         }
+
+        return $this->$primary;
     }
 
     /**
