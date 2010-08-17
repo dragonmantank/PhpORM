@@ -149,12 +149,12 @@ abstract class PhpORM_Entity implements ArrayAccess
     public function loadRelationship($name)
     {
         $relation = $this->_relationships[$name];
-        $repo = $relation['repo'];
+        $repo = new $relation['repo'];
 
         if($relation['type'] == 'one') {
-            $this->_relations[$property] = $repo->fetchOneBy($relation['key']['foreign'], $relation['key']['local']);
+            $this->_relations[$property] = $repo->fetchOneBy($relation['key']['foreign'], $this->$relation['key']['local']);
         } elseif($relation['type'] == 'many') {
-            $this->_relations[$property] = $repo->fetchAllBy($relation['key']['foreign'], $relation['key']['local']);
+            $this->_relations[$property] = $repo->fetchAllBy($relation['key']['foreign'], $this->$relation['key']['local']);
         }
     }
 
