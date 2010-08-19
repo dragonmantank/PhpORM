@@ -157,4 +157,46 @@ class CollectionTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Sample', $collection[0]);
         $this->assertEquals('Value', $collection[1]);
     }
+
+    public function testOrderBy()
+    {
+        $data = array(
+            array('key' => 1, 'value' => 'One'),
+            array('key' => 5, 'value' => 'Five'),
+            array('key' => 10, 'value' => 'Two'),
+        );
+
+        $collection = new PhpORM_Collection();
+        $collection[] = $data[1];
+        $collection[] = $data[0];
+        $collection[] = $data[2];
+
+        $collection->orderBy('key');
+
+        for($x = 0; $x < 3; $x++) {
+            $this->assertEquals($data[$x]['key'], $collection[$x]['key']);
+            $this->assertEquals($data[$x]['value'], $collection[$x]['value']);
+        }
+    }
+
+    public function testOrderByCall()
+    {
+        $data = array(
+            array('key' => 1, 'value' => 'One'),
+            array('key' => 5, 'value' => 'Five'),
+            array('key' => 10, 'value' => 'Two'),
+        );
+
+        $collection = new PhpORM_Collection();
+        $collection[] = $data[1];
+        $collection[] = $data[0];
+        $collection[] = $data[2];
+
+        $collection->orderBykey();
+
+        for($x = 0; $x < 3; $x++) {
+            $this->assertEquals($data[$x]['key'], $collection[$x]['key']);
+            $this->assertEquals($data[$x]['value'], $collection[$x]['value']);
+        }
+    }
 }
