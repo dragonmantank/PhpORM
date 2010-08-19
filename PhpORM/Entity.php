@@ -76,6 +76,15 @@ abstract class PhpORM_Entity implements ArrayAccess
     }
 
     /**
+     * Deletes an entity from the DAO
+     * @return bool
+     */
+    public function delete()
+    {
+        return $this->getDao()->delete($this);
+    }
+
+    /**
      * Returns an attribute from the entity
      *
      * If _ignoreMissingProperty is set to 'false' it will throw an exception
@@ -132,7 +141,7 @@ abstract class PhpORM_Entity implements ArrayAccess
 
     /**
      * Sets all of the entity attributes from an array
-     * @param array $data 
+     * @param array $data
      */
     public function fromArray(array $data)
     {
@@ -204,10 +213,10 @@ abstract class PhpORM_Entity implements ArrayAccess
      * Saves the entity to its data source
      *
      * This will return the primary key value of the entity
-     * 
+     *
      * @return mixed
      */
-    public function save() 
+    public function save()
     {
         $dao = $this->getDao();
         $primary = $this->_primary;
@@ -246,7 +255,7 @@ abstract class PhpORM_Entity implements ArrayAccess
      *
      * This will override any existing DAO and cause the entity to use it
      * instead of the type specified in _daoObjectName
-     * 
+     *
      * @param PhpORM_Dao $dao
      */
     public function setDao(PhpORM_Dao $dao)

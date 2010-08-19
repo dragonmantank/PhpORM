@@ -24,7 +24,7 @@ class PhpORM_Dao_ZendDb extends PhpORM_Dao
     public function delete(PhpORM_Entity $entity)
     {
         $table = $this->_getTable();
-        $this->delete($entity);
+        return $table->delete('id = '.$entity->id);
     }
 
     public function fetchAll($where = null)
