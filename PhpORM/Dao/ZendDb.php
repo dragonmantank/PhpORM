@@ -88,7 +88,11 @@ class PhpORM_Dao_ZendDb extends PhpORM_Dao
         }
         $result = $table->fetchRow($select);
 
-        return $result->toArray();
+        if($result != null) {
+            return $result->toArray();
+        } else {
+            return null;
+        }
     }
 
     public function find($id)

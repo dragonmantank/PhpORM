@@ -152,9 +152,9 @@ abstract class PhpORM_Entity implements ArrayAccess
         $repo = new $relation['repo'];
 
         if($relation['type'] == 'one') {
-            $this->_relations[$property] = $repo->fetchOneBy($relation['key']['foreign'], $this->$relation['key']['local']);
+            $this->_relations[$name] = $repo->fetchOneBy($relation['key']['foreign'], $this->$relation['key']['local']);
         } elseif($relation['type'] == 'many') {
-            $this->_relations[$property] = $repo->fetchAllBy($relation['key']['foreign'], $this->$relation['key']['local']);
+            $this->_relations[$name] = $repo->fetchAllBy($relation['key']['foreign'], $this->$relation['key']['local']);
         }
     }
 
@@ -210,12 +210,15 @@ abstract class PhpORM_Entity implements ArrayAccess
     public function save() 
     {
         $dao = $this->getDao();
+        $primary = $this->_primary;
 
-        if ($this->$this->_primary == null) {
-            $this->$this->_primary = $dao->insert($this);
+        if ($this->$primary == null) {
+            $this->$primary = $dao->insert($this);
         } else {
-            $dao->update($this);
+            $this->$primary = $dao->update($this);
         }
+
+        return $this->$primary;
     }
 
     /**
