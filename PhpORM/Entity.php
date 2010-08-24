@@ -246,7 +246,11 @@ abstract class PhpORM_Entity implements ArrayAccess
         if (array_key_exists($property, get_object_vars($this)) || $this->_allowDynamicAttributes) {
             $this->$property = $value;
         } else {
-            throw new Exception('Requested property ' . $property . ' does not exist, could not set');
+            if(array_key_exists($property, $this->_relationships)) {
+                $this->_relations[$property] = $value;
+            } else {
+                throw new Exception('Requested property ' . $property . ' does not exist, could not set');
+            }
         }
     }
 
