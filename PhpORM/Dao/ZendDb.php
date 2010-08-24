@@ -23,13 +23,13 @@ class PhpORM_Dao_ZendDb extends PhpORM_Dao
 
     public function delete(PhpORM_Entity $entity)
     {
-        $table = $this->_getTable();
+        $table = $this->getTable();
         $this->delete($entity);
     }
 
     public function fetchAll($where = null)
     {
-        $table = $this->_getTable();
+        $table = $this->getTable();
         if ($where != null) {
             $result = $table->fetchAll($where);
         } else {
@@ -51,7 +51,7 @@ class PhpORM_Dao_ZendDb extends PhpORM_Dao
      */
     public function fetchAllBy($key, $value = null)
     {
-        $table = $this->_getTable();
+        $table = $this->getTable();
         $select = $table->select();
         if (is_array($key)) {
             foreach ($key as $name => $keyvalue) {
@@ -77,7 +77,7 @@ class PhpORM_Dao_ZendDb extends PhpORM_Dao
      */
     public function fetchOneBy($key, $value = null)
     {
-        $table = $this->_getTable();
+        $table = $this->getTable();
         $select = $table->select();
         if (is_array($key)) {
             foreach ($key as $name => $keyvalue) {
@@ -93,7 +93,7 @@ class PhpORM_Dao_ZendDb extends PhpORM_Dao
 
     public function find($id)
     {
-        $table = $this->_getTable();
+        $table = $this->getTable();
         $row = $table->find($id);
 
         if ($row != null) {
@@ -105,13 +105,17 @@ class PhpORM_Dao_ZendDb extends PhpORM_Dao
 
     public function insert(PhpORM_Entity $entity)
     {
-        $table = $this->_getTable();
+        $table = $this->getTable();
         $data = $entity->toArray();
 
         return $table->insert($data);
     }
 
-    protected function _getTable()
+    /**
+     * Gets the Zend_Db_Table object
+     * @return Zend_Db_Table_Abstract
+     */
+    public function getTable()
     {
         if ($this->_table == null) {
             $this->_table = new Zend_Db_Table($this->_tableName);
@@ -122,7 +126,7 @@ class PhpORM_Dao_ZendDb extends PhpORM_Dao
 
     public function update(PhpORM_Entity $entity)
     {
-        $table = $this->_getTable();
+        $table = $this->getTable();
         $data = $entity->toArray();
         $id = $entity->id;
         unset($data['id']);
