@@ -165,6 +165,8 @@ class PhpORM_Dao_ArrayStorage extends PhpORM_Dao
             $foundRows = false;
         } elseif($return == self::RETURN_MULTIPLE) {
             $foundRows = array();
+        } else {
+            $foundRows = null;
         }
 
         if(is_array($key)) {

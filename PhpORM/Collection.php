@@ -12,9 +12,15 @@
  */
 class PhpORM_Collection extends ArrayObject
 {
-
     /**
-     * Helps define some easy calls to other functions in the DAO
+     * Key that we are going to re-sort by. Only used when ::orderBy is called
+     *
+     * @var string
+     */
+    protected $_sortKey;
+    
+    /**
+     * Helps define some easy calls to other functions in the Collection
      *
      * @param string $name
      * @param array $arguments
@@ -34,7 +40,30 @@ class PhpORM_Collection extends ArrayObject
             return $this->fetchOneBy($key, $arguments[0]);
         }
 
+        if(stripos($name, 'orderBy') === 0) {
+            $key = substr($name, 7);
+
+            return $this->orderBy($key);
+        }
+
         throw new Exception('Unknown method '.$name.' passed');
+    }
+
+    /**
+     * Internal comparison function for resorting the collection
+     * @param mixed $x
+     * @param mixed $y
+     * @return integer
+     */
+    protected function _compare($x, $y)
+    {
+        if($x[$this->_sortKey] == $y[$this->_sortKey]) {
+            return 0;
+        } else if($x[$this->_sortKey] < $y[$this->_sortKey]) {
+            return -1;
+        } else {
+            return 1;
+        }
     }
 
     /**
@@ -84,6 +113,19 @@ class PhpORM_Collection extends ArrayObject
     public function __get($name)
     {
         return $this[$name];
+    }
+
+    /**
+     * Resorts a collection based upon a key
+     *
+     * @param string $key
+     */
+    public function orderBy($key)
+    {
+        $this->_sortKey = $key;
+        $store = $this->toArray();
+        usort($store, array($this, '_compare'));
+        $this->fromArray($store);
     }
 
     /**
