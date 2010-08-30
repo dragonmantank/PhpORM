@@ -15,18 +15,33 @@
 class PhpORM_Dao_ZendDb extends PhpORM_Dao
 {
     /**
-     *
+     * Table object
      * @var Zend_Db_Table
      */
     protected $_table;
+
+    /**
+     * Name of the table we should generate from
+     * @var <type>
+     */
     protected $_tableName;
 
+    /**
+     * Deletes the specified entity from the database
+     * @param PhpORM_Entity $entity
+     * @return bool
+     */
     public function delete(PhpORM_Entity $entity)
     {
         $table = $this->getTable();
-        return $table->delete('id = '.$entity->id);
+        return $table->delete($table->getAdapter()->quoteInto('id = ?',$entity->id));
     }
 
+    /**
+     * Selects all of the matching rows in a database
+     * @param string $where
+     * @return array
+     */
     public function fetchAll($where = null)
     {
         $table = $this->getTable();
@@ -95,6 +110,14 @@ class PhpORM_Dao_ZendDb extends PhpORM_Dao
         }
     }
 
+    /**
+     * Returns the row that has the specified ID
+     *
+     * If no row is found, null is returned
+     * 
+     * @param mixed $id
+     * @return mixed
+     */
     public function find($id)
     {
         $table = $this->getTable();
@@ -107,6 +130,20 @@ class PhpORM_Dao_ZendDb extends PhpORM_Dao
         }
     }
 
+    /**
+     * Returns the table name
+     * @return string
+     */
+    public function getTableName()
+    {
+        return $this->_tableName;
+    }
+
+    /**
+     * Inserts the entity into the database
+     * @param PhpORM_Entity $entity
+     * @return integer
+     */
     public function insert(PhpORM_Entity $entity)
     {
         $table = $this->getTable();
@@ -128,6 +165,10 @@ class PhpORM_Dao_ZendDb extends PhpORM_Dao
         return $this->_table;
     }
 
+    /**
+     * Updates the specified row with entity data
+     * @param PhpORM_Entity $entity
+     */
     public function update(PhpORM_Entity $entity)
     {
         $table = $this->getTable();

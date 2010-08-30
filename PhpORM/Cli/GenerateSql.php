@@ -10,6 +10,16 @@
 class PhpORM_Cli_GenerateSql
 {
     /**
+     * Use a MySQL database
+     */
+    const MYSQL = 'mysql';
+
+    /**
+     * Use a SQLite database
+     */
+    const SQLITE = 'sqlite';
+
+    /**
      * Types that are allowed to have a length
      * @var array
      */
@@ -53,14 +63,22 @@ class PhpORM_Cli_GenerateSql
     protected $_tableName;
 
     /**
+     * The type of database we are generating
+     * @var string
+     */
+    protected $_type;
+
+    /**
      * Sets the name of the class we are working with
      * @param string $class
      * @param string $table_name
+     * @param string $type
      */
-    public function __construct($class, $table_name)
+    public function __construct($class, $table_name, $type = self::MYSQL)
     {
         $this->_className = $class;
         $this->_tableName = $table_name;
+        $this->_type = $type;
     }
 
     /**
@@ -144,6 +162,12 @@ class PhpORM_Cli_GenerateSql
             }
         }
         $columns = implode(",\n", $definitions);
-        return "CREATE TABLE ".$this->_tableName." (".$columns.") ENGINE=MYISAM;\n";
+        
+        $sql = "CREATE TABLE ".$this->_tableName." (".$columns.")";
+        if($this->_type == self::MYSQL) {
+            $sql .= " ENGINE=MYISAM";
+        }
+
+        return $sql.";";
     }
 }
