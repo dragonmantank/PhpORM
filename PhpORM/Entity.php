@@ -277,7 +277,7 @@ abstract class PhpORM_Entity implements ArrayAccess
     public function toArray() {
         $data = array();
         foreach (get_object_vars($this) as $key => $value) {
-            if(strpos($key, '_') === false) {
+            if(strpos($key, '_') === false || strpos($key, '_') != 0) {
                 $data[$key] = $value;
             }
         }
