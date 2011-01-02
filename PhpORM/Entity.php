@@ -224,7 +224,7 @@ abstract class PhpORM_Entity implements ArrayAccess
         if ($this->$primary == null) {
             $this->$primary = $dao->insert($this);
         } else {
-            $this->$primary = $dao->update($this);
+            $dao->update($this);
         }
 
         return $this->$primary;
