@@ -1,0 +1,26 @@
+{
+    "name": "dragonmantank/PhpORM",
+    "type": "project",
+    "description": "A compact PHP Object Relational Management library",
+    "keywords": [
+        "framework"
+    ],
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Chris Tankersley",
+            "homepage": "http://ctankersley.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.4.0",
+        "aura/sql": "2.*@dev",
+        "aura/sql-query": "2.*@dev"
+    },
+    "autoload": {
+        "psr-0": {
+            "": "src/"
+        }
+    }
+}
