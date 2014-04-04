@@ -1,5 +1,7 @@
 # PhpORM Readme
-Last Updated: 2010-08-13, Chris Tankersley
+Last Updated: 2014-04-04, Chris Tankersley
+
+THIS IS HORRIBLY OUT OF DATE, WILL FIX LATER.
 
 PhpORM is a compact Object Relational Management library for PHP. It allows for 
 quick prototyping and management of objects that need to be persisted.
