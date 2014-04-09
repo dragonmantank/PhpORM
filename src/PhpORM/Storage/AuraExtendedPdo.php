@@ -50,9 +50,9 @@ class AuraExtendedPdo
     {
         $select = $this->queryHandler->newSelect();
         $select
-            ->cols(['*'])
+            ->cols(array('*'))
             ->from($table)
-            ->orderBy([$order])
+            ->orderBy(array($order))
         ;
 
         return $this->db->fetchAll($select->__toString());
@@ -71,9 +71,9 @@ class AuraExtendedPdo
     {
         $select = $this->queryHandler->newSelect();
         $select
-            ->cols(['*'])
+            ->cols(array('*'))
             ->from($table)
-            ->orderBy([$order])
+            ->orderBy(array($order))
         ;
         foreach($criteria as $column => $value) {
             $select->where($column.' = :'.$column);
@@ -95,7 +95,7 @@ class AuraExtendedPdo
     {
         $select = $this->queryHandler->newSelect();
         $select
-            ->cols(['*'])
+            ->cols(array('*'))
             ->from($table)
         ;
         foreach($criteria as $column => $value) {

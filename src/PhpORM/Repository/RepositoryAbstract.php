@@ -44,7 +44,7 @@ class RepositoryAbstract implements RepositoryInterface
         $rowset = $this->storage->fetchAll($this->table);
         $class = get_class($this->prototype);
 
-        $entities = [];
+        $entities = array();
         foreach($rowset as $row) {
             $entity = new $class;
             foreach($row as $member => $value) {
@@ -68,7 +68,7 @@ class RepositoryAbstract implements RepositoryInterface
         $rowset = $this->storage->fetchAllBy($criteria, $this->table);
         $class = get_class($this->prototype);
 
-        $entities = [];
+        $entities = array();
         foreach($rowset as $row) {
             $entity = new $class;
             foreach($row as $member => $value) {
