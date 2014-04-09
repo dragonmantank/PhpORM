@@ -88,7 +88,7 @@ class RepositoryAbstract implements RepositoryInterface
      */
     public function find($identifier)
     {
-        $row = $this->storage->find([$this->identifierColumn => $identifier], $this->table);
+        $row = $this->storage->find(array($this->identifierColumn => $identifier), $this->table);
 
         if(!empty($row)) {
             $class = get_class($this->prototype);
