@@ -118,7 +118,7 @@ class AuraExtendedPdo
      */
     public function save($data, $table, $identifierColumn = 'id')
     {
-        $data = (array)$data;
+        $data = $this->convertToArray($data);
         if(!empty($data[$identifierColumn])) {
             $update = $this->queryHandler->newUpdate();
             $update
@@ -139,5 +139,26 @@ class AuraExtendedPdo
             $name = $insert->getLastInsertIdName($identifierColumn);
             return $this->db->lastInsertId($name);
         }
+    }
+
+    /**
+     * Tries various ways to convert the entity to an array safely
+     *
+     * @param mixed $data
+     * @return array
+     */
+    protected function convertToArray($data)
+    {
+        if(is_array($data)) {
+            return $data;
+        }
+
+        if(is_object($data)) {
+            if(method_exists($data, 'toArray')) {
+                return $data->toArray();
+            }
+        }
+
+        return (array)$data;
     }
 }
