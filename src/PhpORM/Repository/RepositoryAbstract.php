@@ -35,6 +35,16 @@ class RepositoryAbstract implements RepositoryInterface
     }
 
     /**
+     * Deletes an object from the storage container
+     *
+     * @param array $criteria
+     */
+    public function delete($criteria)
+    {
+        return $this->storage->delete($criteria, $this->table);
+    }
+
+    /**
      * Returns all of the objects in the storage container
      *
      * @return array

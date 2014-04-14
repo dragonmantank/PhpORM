@@ -39,6 +39,18 @@ class AuraExtendedPdo
         $this->queryHandler = $queryHandler;
     }
 
+    public function delete($criteria, $table)
+    {
+        $delete = $this->queryHandler->newDelete();
+        $delete->from($table);
+        foreach($criteria as $col => $value) {
+            $delete->where($col.' = :'.$col);
+        }
+        $delete->bindValues($criteria);
+        
+        return $this->db->perform($delete->__toString(), $delete->getBindValues());
+    }
+
     /**
      * Returns all the results in the table
      *

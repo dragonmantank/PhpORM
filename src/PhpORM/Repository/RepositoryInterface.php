@@ -16,6 +16,13 @@ namespace PhpORM\Repository;
 interface RepositoryInterface
 {
     /**
+     * Removes an object from the storage container
+     *
+     * @param array $criteria
+     */
+    public function delete($criteria);
+
+    /**
      * Returns all of the objects in the storage container
      *
      * @return array
