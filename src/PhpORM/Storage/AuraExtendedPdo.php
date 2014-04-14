@@ -121,13 +121,16 @@ class AuraExtendedPdo
         $data = $this->convertToArray($data);
         if(!empty($data[$identifierColumn])) {
             $update = $this->queryHandler->newUpdate();
+            $identifierColumnData = $data[$identifierColumn];
+            unset($data[$identifierColumn]);
             $update
                 ->table($table)
                 ->cols(array_keys($data))
+                ->where($identifierColumn.' = :identifierColumn', $identifierColumnData)
                 ->bindValues($data)
             ;
             $this->db->perform($update->__toString(), $update->getBindValues());
-            return $data[$identifierColumn];
+            return $identifierColumnData;
         } else {
             $insert = $this->queryHandler->newInsert();
             $insert
