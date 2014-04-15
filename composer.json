@@ -18,6 +18,10 @@
         "aura/sql": "2.*@dev",
         "aura/sql-query": "2.*@dev"
     },
+    "require-dev": {
+        "phpunit/phpunit": "4.0.*",
+        "phpunit/dbunit": ">=1.2"
+    },
     "autoload": {
         "psr-0": {
             "": "src/"

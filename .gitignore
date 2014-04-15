@@ -1,3 +1,7 @@
 .idea/
 composer.phar
 vendor/
+tests/config.php
+.DS_Store
+composer.lock
+tests/log

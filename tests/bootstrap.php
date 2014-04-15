@@ -2,15 +2,15 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-spl_autoload_register('autoload');
+require_once __DIR__.'/config.php';
 
-function autoload($class) {
-    $name = str_replace('_', DIRECTORY_SEPARATOR, $class);
-    require_once $name.'.php';
-}
+$loader = require __DIR__.'/../vendor/autoload.php';
+$loader->add('', __DIR__.'/../src');
 
-//Ensure library/ is on include_path
-set_include_path(implode(PATH_SEPARATOR, array(
-    realpath('../'),
-    get_include_path()
-)));
+$dbh = new \PDO(TESTS_DB_DSN, TESTS_DB_USERNAME, TESTS_DB_PASSWORD);
+$dbh->exec("CREATE TABLE `users` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `username` varchar(255) NOT NULL DEFAULT '',
+  `password` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;");

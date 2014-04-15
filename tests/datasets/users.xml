@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+<dataset>
+    <users id="1" username="root" password="password" />
+    <users id="2" username="user1" password="password2" />
+    <users id="3" username="user2" password="password3" />
+</dataset>
