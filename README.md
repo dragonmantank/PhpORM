@@ -1,7 +1,5 @@
 # PhpORM Readme
-Last Updated: 2014-04-04, Chris Tankersley
-
-THIS IS HORRIBLY OUT OF DATE, WILL FIX LATER.
+Last Updated: 2014-04-15, Chris Tankersley
 
 PhpORM is a compact Object Relational Management library for PHP. It allows for 
 quick prototyping and management of objects that need to be persisted.
@@ -9,14 +7,12 @@ quick prototyping and management of objects that need to be persisted.
 Since persistence doesn't always mean to a database, it can easily be extended
 to support different persistance layers.
 
-It works out of the box with Zend Framework by integrating Zend_Db and by itself.
+This version uses Aura.SQL to provide support for any database provider supported by Aura.SQL. All you need is PDO!
 
 ## Parts of PhpORM
 * Entities - Singular Objects
 * Repositories - Allows searching and retrieving
-* Collections - Groups of similar Entities
-* DAOs - Access methods for storage
-* Command Line Interface - Group of CLI scripts to help with development
+* Storage - Ways to access different data stores
 
 ### Entities
 Entities are the 'things' in the application. If you are building a pet
@@ -26,11 +22,8 @@ normally in a database.
 
 An Entity would look like this:
 
-    Class Animal extends PhpORM_Entity
+    Class Animal
     {
-        // Reserved entity members are prefixed with a _
-        protected $_daoObjectName = 'Dao_Animals'; // Class to use for data access
-
         protected $id;           // Database ID
         protected $type;         // Type of animal
         protected $inductionDate // Date Animal came to Shelter
@@ -43,130 +36,36 @@ You could then access the entity like this:
     $animal = new Animal();
     $animal->type = 'Cat';
     $animal->inductionDate = time();
-    $animal['name'] = 'Fluffy';
-    $animal->save();
-
-#### Relationships
-Entities also have a concept of relationships, in either the one-to-many or
-the one-to-one setup. You define relationships and the Entity will load them
-as needed to cut down on data access. 
-
-If we wanted to associate 
-
-    Class Animal extends PhpORM_Entity
-    {
-        ....
-        protected $_relationships = array(
-            'AnimalShelter' => array(
-                'repo' => 'Repository_Shelters',
-                'entity' => 'Shelter',
-                'key' => array('foreign' => 'id', 'local' => 'shelter_id'),
-                'type' => 'one', 
-            ),
-        );
-    }
-
-And you would access the relationship like this:
-
-    $shelter = $animal->AnimalShelter;
-
-#### SQL Generation Comments
-You can add DocBlocks to your properties to allow PhpORM to generate SQL for you.
-Let's modify our Entity just a bit:
-
-    /** type=primary_autoincrement **/
-    protected $id;           // Database ID
-    /** type=varchar length=50 **/
-    protected $type;         // Type of animal
-    /** type=date **/
-    protected $inductionDate // Date Animal came to Shelter
-    /** type=varchar length=50 null **/
-    protected $name;         // Name of the animal
-
-The CLI interface for PhpORM will use those comments to generate an SQL Create
-Table statement for you.
+    $animalRepository->save($animal);
 
 ### Repositories
-Repositories are the recommended way to get information out of the data storage. While you can use
-the DAOs directly, the Repositories allow more flexibility. Repositories are generally set around a specific Entity and work only with that Entity. This allows the Repository to automatically generate Entities based
-on the data sources.
+Repositories are the recommended way to get information out of the data storage. We've done away with the need for using
+direct Data Access Objects. Repositories are generally set around a specific Entity and work only with that Entity. This
+allows the Repository to automatically generate Entities based on the data sources.
 
-A basic Repository looks like this:
+For database-backed persistance, a basic repository needs no specific class and can utilize the shipped DBRepository class.
+It requires just a storage mechanism and a prototype object to base it's results on.
 
-    class Repository_Animals extends PhpORM_Repository
-    {
-        protected $_daoObjectName = 'Dao_Animals';
-        protected $_entityName = 'Animal';
-    }
+    // $storage is a pre-created connection to your data store, see the Storage section
+    $animalRepo = new PhpORM\Repository\DBRepository($storage, new Animal());
 
 This repository will return Animal entities (or collections of Animal entities):
 
-    $repo = new Repository_Animals();
-    $cats = $repo->fetchAllBy('type', 'cat');  // Return all the cats
+    $cats = $animalRepo->fetchAllBy(array('type' => 'cat'));  // Return all the cats
     $dog = $repo->find($dogId); // Find the specified object by primary key
-    $fluffy = $repo->findOneBy('name', 'Fluffy'); // Search by something other than primary key
-
-### Collections
-Collections are a group of entities. They provide storage as well as additional searching capabilities. Collections can be created manually or can be returned by Repositories. They can be manipulated like
-PHP arrays or like objects, and contain basic searching functions.
-
-    // Select all the animals in a shelter
-    $collection = $repo->fetchAllBy('shelter_id', $shelter->id);
-    // Pull out all of the cats without going back to the data source
-    $cats = $collection->fetchAllBy('type', 'cats');
-    // Add a new cat
-    $collection[] = $cat
-    // Find a specific cat without knowing the primary key
-    $fluffy = $collection->findOneBy('name', 'Fluffy');
+    $fluffy = $repo->findBy(array('name' => 'Fluffy')); // Search by something other than primary key
   
-### DAOs (Data Access Objects)
-DAOs take care of the actual persistence of Entities. These directly interact with something like a database, CSV file, XML, or even something not truly persistent like an Array. Since DAOs are meant to be generic, they always return an array. For more string typecasting, the Repository is a better access source.
+### Storage
+Storages replace the Data Access Objects of the older versions of PhpORM, as part of the DAO code now lives in the repositories.
+Storage systems provide a standard way to interact with some sort of storage system, be it a database or an API. PhpORM
+ships with a PDO-based storage system that utilizes Aura.SQL and Aura.SQL-Query to provide access to many different
+database backends.
 
-Each DAO type needs to extend the PhpORM\_Dao abstract class an implement the functions. An example for Database access is using PhpORM\_Dao\_ZendDb to use the Zend_Db methods. 
+For the AuraExtendedPdo storage system, you just need to invoke it with an AuraExtendedPdo object and a QueryFactory from
+Aura.SQL-Query.
 
-    class Dao_Animals extends PhpORM_Dao_ZendDb
-    {
-        protected $_tableName = 'a_Animals';
-    }
+    $storage = new PhpORM\Storage\AuraExtendedPdo($extendedPdo, new Aura\Sql_Query\QueryFactory('mysql'));
 
-    $dao = new Dao_Animals();
-    $cats = $dao->fetchAllBy('type', 'cat');
-    is_array($cats); // Would return true
+You can then use the storage with your Repositories so they can access data:
 
-## Prototyping
-PhpORM also contains two things to make prototyping code quick and easy. PhpORM\_Dao\_ArrayStorage can be used to quickly populate a data storage from a simple PHP array and looks no different than if you were doing database access:
-
-There is also a generic Entity class in the form of PhpORM\_Entity\_Generic. It will accept any set of attributes and can be created from arrays as well. 
-
-    $dao = new PhpORM_Dao_ArrayStorage();
-    $dao->insert(array('id'=>1,'type'=>'cat','name'=>'Fluffy'));
-    $dao->insert(array('id'=>2,'type'=>'cat','name'=>'Missy'));
-    $dao->insert(array('id'=>3,'type'=>'dog','name'=>'Rex'));
-
-    $collection = new PhpORM_Collection();
-    foreach($dao->fetchAllBy('type', 'cats') as $row) {
-        $collection[] = new PhpORM_Entity_Generic($row);
-    }
-    $fluffy = $collection->fetchOneBy('name', 'Fluffy');
-    $fluffy->setDao($dao); // We want to override the built-in DAO
-    $fluffy->shelter_id = 5;
-    $fluffy->save(); // This will save it back to the ArrayStorage DAO
-
-## Command Line Interface
-PhpORM has basic command line interface for interacting with entities. Currently
-it supports creating an SQL block from an entity based upon the DocBlock comments
-on an entity properties. The CLI is very ugly at this stage.
-
-### Set up Bootstrap
-In bin/phporm-bootstrap.php, edit the set_include_path() function to include any
-paths for where your Entities are stored.
-
-### Running the CLI
-You can generate an SQL block with the following format:
-
-    $ /path/to/php phporm-generate-tables <Class Name> <Table Name>
-
-If you had an entity called MyApp_Entity_Messages and you wanted to create a table
-called 'messages', you would do the following:
-
-    $ /path/to/php phporm-generate-tables MyApp_Entity_Messages messages
+    $animalRepo = new PhpORM\Repository\DBRepository($storage, new Animal());
