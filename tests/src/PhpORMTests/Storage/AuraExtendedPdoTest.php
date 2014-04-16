@@ -65,6 +65,62 @@ class AuraExtendedPdoTest extends \PHPUnit_Extensions_Database_TestCase
     }
 
     /**
+     * Tests as basic search where all results are returned from a table
+     *
+     * @since 2014-04-15
+     */
+    public function testFetchAll()
+    {
+        $originalData = array(
+            1 => array('id' => 1, 'username' => 'root', 'password' => 'password'),
+            2 => array('id' => 2, 'username' => 'user1', 'password' => 'password2'),
+            3 => array('id' => 3, 'username' => 'user2', 'password' => 'password3'),
+        );
+        $storage = $this->getStorage();
+        $result = $storage->fetchAll('users');
+
+        $this->assertEquals(3, count($result));
+        foreach($result as $row) {
+            $this->assertEquals($originalData[$row['id']]['id'], $row['id']);
+            $this->assertEquals($originalData[$row['id']]['username'], $row['username']);
+            $this->assertEquals($originalData[$row['id']]['password'], $row['password']);
+        }
+    }
+
+    /**
+     * Tests as basic search where all results are returned from a table based on a criteria
+     *
+     * @since 2014-04-15
+     */
+    public function testFetchAllBy()
+    {
+        $data = array('id' => 1, 'username' => 'root', 'password' => 'password');
+        $storage = $this->getStorage();
+        $result = $storage->fetchAllBy(array('username' => 'root'), 'users');
+
+        $this->assertEquals(1, count($result));
+        $this->assertEquals($data['id'], $result[0]['id']);
+        $this->assertEquals($data['username'], $result[0]['username']);
+        $this->assertEquals($data['password'], $result[0]['password']);
+    }
+
+    /**
+     * Tests as basic search where a single result is returned based on specific criteria
+     *
+     * @since 2014-04-15
+     */
+    public function testFind()
+    {
+        $data = array('id' => 1, 'username' => 'root', 'password' => 'password');
+        $storage = $this->getStorage();
+        $result = $storage->find(array('id' => 1), 'users');
+
+        $this->assertEquals($data['id'], $result['id']);
+        $this->assertEquals($data['username'], $result['username']);
+        $this->assertEquals($data['password'], $result['password']);
+    }
+
+    /**
      * Makes sure that a standard Insert command is run when needed
      *
      * @since 2014-04-15
