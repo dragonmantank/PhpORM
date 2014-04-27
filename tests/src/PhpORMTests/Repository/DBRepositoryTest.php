@@ -9,13 +9,13 @@
 
 namespace PhpORMTests\Repository;
 
-use PhpORM\Repository\RepositoryAbstract;
+use PhpORM\Repository\DBRepository;
 
 /**
  * @backupGlobals disabled
  * @backupStaticAttributes disabled
  */
-class RepositoryAbstractTest extends \PHPUnit_Framework_TestCase
+class DBRepositoryTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * Makes sure that the underlying Delete method is called properly against the storage
@@ -32,9 +32,9 @@ class RepositoryAbstractTest extends \PHPUnit_Framework_TestCase
             ->willReturn(1)
         ;
 
-        $repoAbstract = $this->getMockForAbstractClass('PhpORM\\Repository\\RepositoryAbstract', array($storageMock, new \stdClass));
-        $repoAbstract->table = 'users';
-        $response = $repoAbstract->delete(array('id' => 1));
+        $repo = new DBRepository($storageMock, new \stdClass);
+        $repo->setTable('users');
+        $response = $repo->delete(array('id' => 1));
 
         $this->assertEquals(1, $response);
     }
@@ -58,9 +58,9 @@ class RepositoryAbstractTest extends \PHPUnit_Framework_TestCase
             ->willReturn(array(array('id' => 1, 'username' => 'root')));
         ;
 
-        $repoAbstract = $this->getMockForAbstractClass('PhpORM\\Repository\\RepositoryAbstract', array($storageMock, new \stdClass));
-        $repoAbstract->table = 'users';
-        $response = $repoAbstract->fetchAll();
+        $repo = new DBRepository($storageMock, new \stdClass);
+        $repo->setTable('users');
+        $response = $repo->fetchAll();
 
         $this->assertEquals($expectedData, $response);
     }
@@ -84,9 +84,9 @@ class RepositoryAbstractTest extends \PHPUnit_Framework_TestCase
             ->willReturn(array(array('id' => 1, 'username' => 'root')));
         ;
 
-        $repoAbstract = $this->getMockForAbstractClass('PhpORM\\Repository\\RepositoryAbstract', array($storageMock, new \stdClass));
-        $repoAbstract->table = 'users';
-        $response = $repoAbstract->fetchAllBy(array('id' => 1));
+        $repo = new DBRepository($storageMock, new \stdClass);
+        $repo->setTable('users');
+        $response = $repo->fetchAllBy(array('id' => 1));
 
         $this->assertEquals($expectedData, $response);
     }
@@ -109,10 +109,9 @@ class RepositoryAbstractTest extends \PHPUnit_Framework_TestCase
             ->willReturn(array('id' => 1, 'username' => 'root'));
         ;
 
-        $repoAbstract = $this->getMockForAbstractClass('PhpORM\\Repository\\RepositoryAbstract', array($storageMock, new \stdClass));
-        $repoAbstract->table = 'users';
-        $repoAbstract->identifierColumn = 'id';
-        $response = $repoAbstract->find(1);
+        $repo = new DBRepository($storageMock, new \stdClass);
+        $repo->setTable('users');
+        $response = $repo->find(1);
 
         $this->assertEquals($row1, $response);
     }
@@ -132,10 +131,9 @@ class RepositoryAbstractTest extends \PHPUnit_Framework_TestCase
             ->willReturn(array());
         ;
 
-        $repoAbstract = $this->getMockForAbstractClass('PhpORM\\Repository\\RepositoryAbstract', array($storageMock, new \stdClass));
-        $repoAbstract->table = 'users';
-        $repoAbstract->identifierColumn = 'id';
-        $response = $repoAbstract->find(1);
+        $repo = new DBRepository($storageMock, new \stdClass);
+        $repo->setTable('users');
+        $response = $repo->find(1);
 
         $this->assertNull($response);
     }
@@ -158,10 +156,9 @@ class RepositoryAbstractTest extends \PHPUnit_Framework_TestCase
             ->willReturn(array('id' => 1, 'username' => 'root'));
         ;
 
-        $repoAbstract = $this->getMockForAbstractClass('PhpORM\\Repository\\RepositoryAbstract', array($storageMock, new \stdClass));
-        $repoAbstract->table = 'users';
-        $repoAbstract->identifierColumn = 'id';
-        $response = $repoAbstract->findBy(array('id' => 1));
+        $repo = new DBRepository($storageMock, new \stdClass);
+        $repo->setTable('users');
+        $response = $repo->findBy(array('id' => 1));
 
         $this->assertEquals($row1, $response);
     }
@@ -181,10 +178,9 @@ class RepositoryAbstractTest extends \PHPUnit_Framework_TestCase
             ->willReturn(array());
         ;
 
-        $repoAbstract = $this->getMockForAbstractClass('PhpORM\\Repository\\RepositoryAbstract', array($storageMock, new \stdClass));
-        $repoAbstract->table = 'users';
-        $repoAbstract->identifierColumn = 'id';
-        $response = $repoAbstract->findBy(array('id' => 1));
+        $repo = new DBRepository($storageMock, new \stdClass);
+        $repo->setTable('users');
+        $response = $repo->findBy(array('id' => 1));
 
         $this->assertNull($response);
     }
@@ -204,9 +200,9 @@ class RepositoryAbstractTest extends \PHPUnit_Framework_TestCase
             ->willReturn(1)
         ;
 
-        $repoAbstract = $this->getMockForAbstractClass('PhpORM\\Repository\\RepositoryAbstract', array($storageMock, new \stdClass));
-        $repoAbstract->table = 'users';
-        $response = $repoAbstract->save(array('username' => 'root'));
+        $repo = new DBRepository($storageMock, new \stdClass);
+        $repo->setTable('users');
+        $response = $repo->save(array('username' => 'root'));
 
         $this->assertEquals(1, $response);
     }
