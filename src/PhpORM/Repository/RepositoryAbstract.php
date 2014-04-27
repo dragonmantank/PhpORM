@@ -17,6 +17,12 @@ namespace PhpORM\Repository;
 class RepositoryAbstract implements RepositoryInterface
 {
     /**
+     * Copy of class type we should try to create
+     * @var object
+     */
+    protected $prototype;
+
+    /**
      * Storage system we're working against
      * @var object
      */
