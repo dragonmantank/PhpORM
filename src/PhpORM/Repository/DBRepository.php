@@ -58,14 +58,9 @@ class DBRepository extends RepositoryAbstract
     public function fetchAll()
     {
         $rowset = $this->storage->fetchAll($this->table);
-        $class = get_class($this->prototype);
-
         $entities = array();
         foreach($rowset as $row) {
-            $entity = new $class;
-            foreach($row as $member => $value) {
-                $entity->$member = $value;
-            }
+            $entity = $this->createObject($row);
             $entities[]= $entity;
         }
 
@@ -82,14 +77,10 @@ class DBRepository extends RepositoryAbstract
     public function fetchAllBy($criteria)
     {
         $rowset = $this->storage->fetchAllBy($criteria, $this->table);
-        $class = get_class($this->prototype);
 
         $entities = array();
         foreach($rowset as $row) {
-            $entity = new $class;
-            foreach($row as $member => $value) {
-                $entity->$member = $value;
-            }
+            $entity = $this->createObject($row);
             $entities[]= $entity;
         }
 
@@ -107,11 +98,7 @@ class DBRepository extends RepositoryAbstract
         $row = $this->storage->find(array($this->identifierColumn => $identifier), $this->table);
 
         if(!empty($row)) {
-            $class = get_class($this->prototype);
-            $entity = new $class;
-            foreach($row as $member => $value) {
-                $entity->$member = $value;
-            }
+            $entity = $this->createObject($row);
             return $entity;
         }
 
@@ -130,11 +117,7 @@ class DBRepository extends RepositoryAbstract
         $row = $this->storage->find($criteria, $this->table);
 
         if(!empty($row)) {
-            $class = get_class($this->prototype);
-            $entity = new $class;
-            foreach($row as $member => $value) {
-                $entity->$member = $value;
-            }
+            $entity = $this->createObject($row);
             return $entity;
         }
 

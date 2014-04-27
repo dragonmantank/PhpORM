@@ -39,4 +39,21 @@ abstract class RepositoryAbstract implements RepositoryInterface
         $this->storage = $storage;
         $this->prototype = $prototype;
     }
+
+    /**
+     * Creates an object from the raw data
+     *
+     * @return object
+     */
+    protected function createObject($data)
+    {
+        $class = get_class($this->prototype);
+        $entity = new $class;
+
+        foreach($data as $member => $value) {
+            $entity->$member = $value;
+        }
+
+        return $entity;
+    }
 }
