@@ -39,6 +39,34 @@ class AuraExtendedPdo
         $this->queryHandler = $queryHandler;
     }
 
+    /**
+     * Builds a select query
+     *
+     * @param $table
+     * @param array $cols
+     * @param string $order
+     * @return \Aura\Sql_Query\Common\SelectInterface
+     */
+    protected function buildSelectQuery($table, $criteria = array(), $cols = array('*'), $order = 'id ASC')
+    {
+        $select = $this->queryHandler->newSelect();
+        $select
+            ->cols(array('*'))
+            ->from($table)
+            ->orderBy(array($order))
+        ;
+
+        foreach($criteria as $column => $value) {
+            $select->where($column.' = :'.$column);
+        }
+
+        if(!empty($criteria)) {
+            $select->bindValues($criteria);
+        }
+
+        return $select;
+    }
+
     public function delete($criteria, $table)
     {
         $delete = $this->queryHandler->newDelete();
@@ -60,12 +88,7 @@ class AuraExtendedPdo
      */
     public function fetchAll($table, $order = 'id ASC')
     {
-        $select = $this->queryHandler->newSelect();
-        $select
-            ->cols(array('*'))
-            ->from($table)
-            ->orderBy(array($order))
-        ;
+        $select = $this->buildSelectQuery($table, array(), array('*'), $order);
 
         return $this->db->fetchAll($select->__toString());
     }
@@ -81,16 +104,7 @@ class AuraExtendedPdo
      */
     public function fetchAllBy($criteria, $table, $order = 'id ASC')
     {
-        $select = $this->queryHandler->newSelect();
-        $select
-            ->cols(array('*'))
-            ->from($table)
-            ->orderBy(array($order))
-        ;
-        foreach($criteria as $column => $value) {
-            $select->where($column.' = :'.$column);
-        }
-        $select->bindValues($criteria);
+        $select = $this->buildSelectQuery($table, $criteria, array('*'), $order);
 
         return $this->db->fetchAll($select->__toString(), $select->getBindValues());
     }
@@ -105,15 +119,7 @@ class AuraExtendedPdo
      */
     public function find($criteria, $table)
     {
-        $select = $this->queryHandler->newSelect();
-        $select
-            ->cols(array('*'))
-            ->from($table)
-        ;
-        foreach($criteria as $column => $value) {
-            $select->where($column.' = :'.$column);
-        }
-        $select->bindValues($criteria);
+        $select = $this->buildSelectQuery($table, $criteria);
 
         return $this->db->fetchOne($select->__toString(), $select->getBindValues());
     }
