@@ -58,13 +58,8 @@ class DBRepository extends RepositoryAbstract
     public function fetchAll()
     {
         $rowset = $this->storage->fetchAll($this->table);
-        $entities = array();
-        foreach($rowset as $row) {
-            $entity = $this->createObject($row);
-            $entities[]= $entity;
-        }
 
-        return $entities;
+        return $this->processResultSet($rowset);
     }
 
     /**
@@ -78,13 +73,7 @@ class DBRepository extends RepositoryAbstract
     {
         $rowset = $this->storage->fetchAllBy($criteria, $this->table);
 
-        $entities = array();
-        foreach($rowset as $row) {
-            $entity = $this->createObject($row);
-            $entities[]= $entity;
-        }
-
-        return $entities;
+        return $this->processResultSet($rowset);
     }
 
     /**
@@ -97,12 +86,7 @@ class DBRepository extends RepositoryAbstract
     {
         $row = $this->storage->find(array($this->identifierColumn => $identifier), $this->table);
 
-        if(!empty($row)) {
-            $entity = $this->createObject($row);
-            return $entity;
-        }
-
-        return null;
+        return $this->processResult($row);
     }
 
     /**
@@ -116,12 +100,7 @@ class DBRepository extends RepositoryAbstract
     {
         $row = $this->storage->find($criteria, $this->table);
 
-        if(!empty($row)) {
-            $entity = $this->createObject($row);
-            return $entity;
-        }
-
-        return null;
+        return $this->processResult($row);
     }
 
     /**

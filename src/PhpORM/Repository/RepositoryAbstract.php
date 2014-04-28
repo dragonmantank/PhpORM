@@ -56,4 +56,37 @@ abstract class RepositoryAbstract implements RepositoryInterface
 
         return $entity;
     }
+
+    /**
+     * Converts a single result into an object
+     *
+     * @param array $result
+     * @return object
+     */
+    protected function processResult($result)
+    {
+        if(!empty($result)) {
+            $entity = $this->createObject($result);
+            return $entity;
+        }
+
+        return null;
+    }
+
+    /**
+     * Converts a series of results into objects
+     *
+     * @param array $resultSet
+     * @return array
+     */
+    protected function processResultSet($resultSet)
+    {
+        $entities = array();
+        foreach($resultSet as $result) {
+            $entity = $this->processResult($result);
+            $entities[]= $entity;
+        }
+
+        return $entities;
+    }
 }
