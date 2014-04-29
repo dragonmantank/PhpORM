@@ -51,7 +51,7 @@ class AuraExtendedPdo
     {
         $select = $this->queryHandler->newSelect();
         $select
-            ->cols(array('*'))
+            ->cols($cols)
             ->from($table)
             ->orderBy(array($order))
         ;
