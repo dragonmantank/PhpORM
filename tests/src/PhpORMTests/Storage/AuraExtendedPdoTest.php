@@ -251,4 +251,49 @@ WHERE
 
         $this->assertEquals(1, $id);
     }
+
+    /**
+     * Makes sure that objects with a toArray method are called when converting entities to arrays
+     *
+     * @since 2014-05-02
+     */
+    public function testConvertObjectToArrayWithToArray()
+    {
+        $method = new \ReflectionMethod('PhpORM\Storage\AuraExtendedPdo', 'convertToArray');
+        $method->setAccessible('true');
+
+        $expected = array('id' => 1, 'name' => 'Tester');
+        $mockEntity = $this->getMock('\\stdClass', array('toArray'));
+        $mockEntity
+            ->expects($this->once())
+            ->method('toArray')
+            ->will($this->returnValue($expected))
+        ;
+
+        $storage = new AuraExtendedPdo(new \stdClass(), new \stdClass());
+        $res = $method->invoke($storage, $mockEntity);
+
+        $this->assertEquals($expected, $res);
+    }
+
+    /**
+     * Makes sure that objects will be cast as arrays if they don't have a toArray method
+     *
+     * @since 2014-05-02
+     */
+    public function testConvertObjectToArrayWithCasting()
+    {
+        $method = new \ReflectionMethod('PhpORM\Storage\AuraExtendedPdo', 'convertToArray');
+        $method->setAccessible('true');
+
+        $expected = array('id' => 1, 'name' => 'Tester');
+        $entity = new \stdClass();
+        $entity->id = $expected['id'];
+        $entity->name = $expected['name'];
+
+        $storage = new AuraExtendedPdo(new \stdClass(), new \stdClass());
+        $res = $method->invoke($storage, $entity);
+
+        $this->assertEquals($expected, $res);
+    }
 }
