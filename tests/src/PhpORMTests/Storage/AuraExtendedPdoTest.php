@@ -6,39 +6,27 @@ use Aura\Sql\ExtendedPdo;
 use PhpORM\Storage\AuraExtendedPdo;
 use Aura\Sql_Query\QueryFactory;
 
+class PDOMock extends \PDO
+{
+    public function __construct() {}
+}
+
 /**
  * @backupGlobals disabled
  * @backupStaticAttributes disabled
  */
-class AuraExtendedPdoTest extends \PHPUnit_Extensions_Database_TestCase
+class AuraExtendedPdoTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @return \PDO
-     */
-    protected function getPdo()
-    {
-        return new \PDO(TESTS_DB_DSN, TESTS_DB_USERNAME, TESTS_DB_PASSWORD);
-    }
-
     /**
      * @return AuraExtendedPdo
      */
     protected function getStorage()
     {
-        $pdo = $this->getPdo();
-        $extendedPdo = new ExtendedPdo($pdo);
-        return new AuraExtendedPdo($extendedPdo, new QueryFactory('mysql'));
-    }
-
-    protected function getConnection()
-    {
-        $pdo = $this->getPdo();
-        return $this->createDefaultDBConnection($pdo, 'phporm-test');
-    }
-
-    protected function getDataSet()
-    {
-        return $this->createFlatXMLDataSet(TESTS_BASEDIR.'/datasets/users.xml');
+        $mockPDO = $this->getMockBuilder('\\PDOMock')
+            ->setMethods(array('perform', 'fetchAll', 'fetchOne', 'lastInsertId'))
+            ->getMock()
+        ;
+        return new AuraExtendedPdo($mockPDO, new QueryFactory('mysql'));
     }
 
     /**
@@ -48,20 +36,27 @@ class AuraExtendedPdoTest extends \PHPUnit_Extensions_Database_TestCase
      */
     public function testDelete()
     {
-        $pdo = $this->getPdo();
-        $stmt = $pdo->prepare('SELECT * FROM users');
-        $stmt->execute();
-        $this->assertEquals(3, $stmt->rowCount());
+        $mockPDO = $this->getMock('\\PDOMock', array('perform'));
+        $mockPDO
+            ->expects($this->once())
+            ->method('perform')
+            ->will($this->returnCallback(function($arg1, $arg2) {
+                $sql = <<<ENDSQL
+DELETE FROM `users`
+WHERE
+    id = :id
+ENDSQL;
+                if($arg1 == $sql && $arg2 = array('id' => 1)) {
+                    return;
+                } else {
+                    throw new \Exception('We did not get the parameters we were expecting');
+                }
+            }))
+        ;
+        $storage = new AuraExtendedPdo($mockPDO, new QueryFactory('mysql'));
+        $res = $storage->delete(array('id' => 1), 'users');
 
-        $storage = $this->getStorage();
-        $storage->delete(array('id' => 1), 'users');
-
-        $stmt = $pdo->prepare('SELECT * FROM users');
-        $stmt->execute();
-        $this->assertEquals(2, $stmt->rowCount());
-
-        $row = $pdo->query('SELECT * FROM users WHERE id=1')->fetch(\PDO::FETCH_ASSOC);
-        $this->assertFalse($row);
+        $this->assertNull($res);
     }
 
     /**
@@ -76,7 +71,27 @@ class AuraExtendedPdoTest extends \PHPUnit_Extensions_Database_TestCase
             2 => array('id' => 2, 'username' => 'user1', 'password' => 'password2'),
             3 => array('id' => 3, 'username' => 'user2', 'password' => 'password3'),
         );
-        $storage = $this->getStorage();
+        $mockPDO = $this->getMock('\\PDOMock', array('fetchAll'));
+        $mockPDO
+            ->expects($this->once())
+            ->method('fetchAll')
+            ->will($this->returnCallback(function($arg1) use ($originalData) {
+                $sql = 'SELECT
+    *
+FROM
+    `users`
+ORDER BY
+    id ASC';
+
+                if($arg1 == $sql) {
+                    return $originalData;
+                } else {
+                    array();
+                }
+            }))
+        ;
+        $storage = new AuraExtendedPdo($mockPDO, new QueryFactory('mysql'));
+
         $result = $storage->fetchAll('users');
 
         $this->assertEquals(3, count($result));
@@ -95,7 +110,28 @@ class AuraExtendedPdoTest extends \PHPUnit_Extensions_Database_TestCase
     public function testFetchAllBy()
     {
         $data = array('id' => 1, 'username' => 'root', 'password' => 'password');
-        $storage = $this->getStorage();
+        $mockPDO = $this->getMock('\\PDOMock', array('fetchAll'));
+        $mockPDO
+            ->expects($this->once())
+            ->method('fetchAll')
+            ->will($this->returnCallback(function($arg1, $arg2) use ($data) {
+                $sql = 'SELECT
+    *
+FROM
+    `users`
+WHERE
+    username = :username
+ORDER BY
+    id ASC';
+
+                if($arg1 == $sql && $arg2 == array('username' => 'root')) {
+                    return array($data);
+                } else {
+                    return array();
+                }
+            }))
+        ;
+        $storage = new AuraExtendedPdo($mockPDO, new QueryFactory('mysql'));
         $result = $storage->fetchAllBy(array('username' => 'root'), 'users');
 
         $this->assertEquals(1, count($result));
@@ -112,7 +148,28 @@ class AuraExtendedPdoTest extends \PHPUnit_Extensions_Database_TestCase
     public function testFind()
     {
         $data = array('id' => 1, 'username' => 'root', 'password' => 'password');
-        $storage = $this->getStorage();
+        $mockPDO = $this->getMock('\\PDOMock', array('fetchOne'));
+        $mockPDO
+            ->expects($this->once())
+            ->method('fetchOne')
+            ->will($this->returnCallback(function($arg1, $arg2) use ($data) {
+                $sql = 'SELECT
+    *
+FROM
+    `users`
+WHERE
+    id = :id
+ORDER BY
+    id ASC';
+
+                if($arg1 == $sql && $arg2 == array('id' => 1)) {
+                    return $data;
+                } else {
+                    return array();
+                }
+            }))
+        ;
+        $storage = new AuraExtendedPdo($mockPDO, new QueryFactory('mysql'));
         $result = $storage->find(array('id' => 1), 'users');
 
         $this->assertEquals($data['id'], $result['id']);
@@ -127,20 +184,36 @@ class AuraExtendedPdoTest extends \PHPUnit_Extensions_Database_TestCase
      */
     public function testInsert()
     {
-        $storage = $this->getStorage();
         $newData = array('username' => 'newroot', 'password' => 'password');
-        $storage->save($newData, 'users');
+        $mockPDO = $this->getMock('\\PDOMock', array('perform', 'lastInsertId'));
+        $mockPDO
+            ->expects($this->once())
+            ->method('perform')
+            ->will($this->returnCallback(function($arg1, $arg2) use ($newData) {
+                $sql = 'INSERT INTO `users` (
+    `username`,
+    `password`
+) VALUES (
+    :username,
+    :password
+)';
+                if($arg1 == $sql && $arg2 == $newData) {
+                    return 1;
+                } else {
+                    return array();
+                }
+            }))
+        ;
+        $mockPDO
+            ->expects($this->once())
+            ->method('lastInsertId')
+            ->will($this->returnValue(1));
+        ;
+        $storage = new AuraExtendedPdo($mockPDO, new QueryFactory('mysql'));
 
-        $pdo = $this->getPdo();
-        $stmt = $pdo->prepare('SELECT * FROM users');
-        $stmt->execute();
-        $this->assertEquals(4, $stmt->rowCount());
+        $id = $storage->save($newData, 'users');
 
-        $result = $pdo->query('SELECT * FROM users WHERE username="newroot"')->fetch(\PDO::FETCH_ASSOC);
-
-        $this->assertTrue($result['id'] > 3);
-        $this->assertEquals($newData['username'], $result['username']);
-        $this->assertEquals($newData['password'], $result['password']);
+        $this->assertEquals(1, $id);
     }
 
     /**
@@ -150,19 +223,32 @@ class AuraExtendedPdoTest extends \PHPUnit_Extensions_Database_TestCase
      */
     public function testUpdate()
     {
-        $storage = $this->getStorage();
         $newData = array('id' => 1, 'username' => 'newroot', 'password' => 'password');
-        $storage->save($newData, 'users');
+        $mockPDO = $this->getMock('\\PDOMock', array('perform'));
+        $mockPDO
+            ->expects($this->once())
+            ->method('perform')
+            ->will($this->returnCallback(function($arg1, $arg2) use ($newData) {
+                $sql = 'UPDATE `users`
+SET
+    `id` = :id,
+    `username` = :username,
+    `password` = :password
+WHERE
+    id = :id';
 
-        $pdo = $this->getPdo();
-        $stmt = $pdo->prepare('SELECT * FROM users');
-        $stmt->execute();
-        $this->assertEquals(3, $stmt->rowCount());
+                if($arg1 == $sql && $arg2 == $newData) {
+                    return 1;
+                } else {
+                    return array();
+                }
+            }))
+        ;
 
-        $result = $pdo->query('SELECT * FROM users WHERE id=1')->fetch(\PDO::FETCH_ASSOC);
+        $storage = new AuraExtendedPdo($mockPDO, new QueryFactory('mysql'));
 
-        $this->assertEquals($newData['id'], $result['id']);
-        $this->assertEquals($newData['username'], $result['username']);
-        $this->assertEquals($newData['password'], $result['password']);
+        $id = $storage->save($newData, 'users');
+
+        $this->assertEquals(1, $id);
     }
 }
