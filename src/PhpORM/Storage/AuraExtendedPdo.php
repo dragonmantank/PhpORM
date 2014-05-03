@@ -23,7 +23,7 @@ class AuraExtendedPdo
 
     /**
      * Fluent SQL handler
-     * @var \Aura\Sql_Query\QueryFactory
+     * @var \Aura\SqlQuery\QueryFactory
      */
     protected $queryHandler;
 
@@ -45,7 +45,7 @@ class AuraExtendedPdo
      * @param $table
      * @param array $cols
      * @param string $order
-     * @return \Aura\Sql_Query\Common\SelectInterface
+     * @return \Aura\SqlQuery\Common\SelectInterface
      */
     protected function buildSelectQuery($table, $criteria = array(), $cols = array('*'), $order = 'id ASC')
     {

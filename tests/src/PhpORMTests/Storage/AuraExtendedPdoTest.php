@@ -4,7 +4,7 @@ namespace PhpORMTests\Storage;
 
 use Aura\Sql\ExtendedPdo;
 use PhpORM\Storage\AuraExtendedPdo;
-use Aura\Sql_Query\QueryFactory;
+use Aura\SqlQuery\QueryFactory;
 
 class PDOMock extends \PDO
 {

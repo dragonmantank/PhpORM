@@ -1,6 +1,10 @@
 # PhpORM Readme
 Last Updated: 2014-04-15, Chris Tankersley
 
+[![Build Status](https://travis-ci.org/dragonmantank/PhpORM.svg?branch=master)](https://travis-ci.org/dragonmantank/PhpORM)
+
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/dragonmantank/PhpORM/badges/quality-score.png?s=e7ade4e389dafe0bb242333c3c9a7f246cfbc036)](https://scrutinizer-ci.com/g/dragonmantank/PhpORM/)
+
 PhpORM is a compact Object Relational Management library for PHP. It allows for 
 quick prototyping and management of objects that need to be persisted.
 
@@ -64,7 +68,7 @@ database backends.
 For the AuraExtendedPdo storage system, you just need to invoke it with an AuraExtendedPdo object and a QueryFactory from
 Aura.SQL-Query.
 
-    $storage = new PhpORM\Storage\AuraExtendedPdo($extendedPdo, new Aura\Sql_Query\QueryFactory('mysql'));
+    $storage = new PhpORM\Storage\AuraExtendedPdo($extendedPdo, new Aura\SqlQuery\QueryFactory('mysql'));
 
 You can then use the storage with your Repositories so they can access data:
 
