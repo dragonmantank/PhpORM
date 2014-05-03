@@ -1,5 +1,8 @@
 # PhpORM Readme
-Last Updated: 2014-04-15, Chris Tankersley
+
+Work on PhpORM has been moved to https://github.com/dragonmantank/casket and this repo will only be updated probably
+never again. I'm leaving it here for some legacy projects I'm still using that are running an older version. I'd
+highly suggest switching to casket.
 
 [![Build Status](https://travis-ci.org/dragonmantank/PhpORM.svg?branch=master)](https://travis-ci.org/dragonmantank/PhpORM)
 
